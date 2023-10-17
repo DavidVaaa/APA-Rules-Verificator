@@ -1,0 +1,15 @@
+Equipo:
+- Caamaño, Agustín
+- Martinez, Joaquín
+- Vázquez, David
+
+Tema:
+Validación de citado en Normas APA.
+
+La cita debe tener el siguiente formato:
+
+Nombre del autor. (Año de publicación). Título del libro. Editorial.
+
+Un ejemplo, sería:
+
+"Artola, I. y Artola, R. (2005). Croquis de un tatami. El Camarote Ediciones"
