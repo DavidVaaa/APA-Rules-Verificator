@@ -36,23 +36,24 @@ parser code {:
    
 /* ------------Declaration of Terminals and Non Terminals Section----------- */
    
-terminal           SEMI, TOKEN2, GRUPO1;
-terminal Integer   NUMBER;
-   
-non terminal Object     fecha, grupos, expr_list;
+terminal SYMBOL, YEAR, TITLE, PUBLISHER, DOT;
+terminal String STRING;
 
-   
+non terminal Citation, Author, Date, BookTitle, Editorial;
 
-   expr_list ::= fecha grupos;
+/* Producciones */
 
-   fecha    ::= TOKEN2
-                SEMI;  
+Citation ::= Author Date BookTitle Editorial DOT;
 
-   grupos    ::= GRUPO1 
-                 NUMBER 
-                 GRUPO1 
-                 NUMBER 
+Author ::= SYMBOL;
 
-                 SEMI; 
-   
+Date ::= "(" YEAR ")";
+
+BookTitle ::= TITLE;
+
+Editorial ::= SYMBOL;
+
+/* Reglas de precedencia (si es necesario) */
+
+precedence left TOK_AND, TOK_OR, TOK_NOT;
    
