@@ -3,26 +3,25 @@ import java.lang.Math;
 import java.util.*;
 import java.io.*;
 
+init with {:
+    table = new HashMap<String, Integer>();
+:};
+
 
 parser code {:
-    
-   
+   public static HashMap<String, Integer> table;
 
     public void report_error(String message, Object info) {
-   
         StringBuffer m = new StringBuffer("Error");
-   
         if (info instanceof java_cup.runtime.Symbol) {
-             java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
+            java_cup.runtime.Symbol s = ((java_cup.runtime.Symbol) info);
             if (s.left >= 0) {                
                 m.append(" in line "+(s.left+1));   
                 if (s.right >= 0)                    
                     m.append(", column "+(s.right+1));
             }
         }
-   
         m.append(" : "+message);
-   
         System.err.println(m);
     }
    
@@ -30,6 +29,19 @@ parser code {:
         report_error(message, info);
         System.exit(1);
     }
+
+    // Función para agregar una cita a la tabla
+    public void addCitation(String author, int year, String title, String publisher) {
+        String citationKey = author + "_" + year + "_" + title + "_" + publisher;
+        table.put(citationKey, year);
+    }
+
+    // Función para verificar si una cita ya existe en la tabla
+    public boolean citationExists(String author, int year, String title, String publisher) {
+        String citationKey = author + "_" + year + "_" + title + "_" + publisher;
+        return table.containsKey(citationKey);
+    }
+
 :};
    
 
@@ -43,17 +55,65 @@ non terminal Citation, Author, Date, BookTitle, Editorial;
 
 /* Producciones */
 
-Citation ::= Author Date BookTitle Editorial DOT;
+Citation ::= Author Date BookTitle Editorial DOT
+            {: 
+                // Acción semántica para verificar y agregar la cita a la tabla
+                String author = ((Symbol) $1).value.toString();
+                int year = (Integer) $3.value;
+                String title = ((Symbol) $4).value.toString();
+                String publisher = ((Symbol) $5).value.toString();
+                
+                // Verificar la validez de la cita
+                if (author.length() > 0 && year > 0 && title.length() > 0 && publisher.length() > 0) {
+                    // Verificar si la cita ya existe
+                    if (citationExists(author, year, title, publisher)) {
+                        report_error("Duplicate citation found!", $1);
+                    } else {
+                        // Agregar la cita a la tabla
+                        addCitation(author, year, title, publisher);
+                        System.out.println("Citation added successfully!");
+                    }
+                } else {
+                    report_error("Invalid citation format!", $1);
+                }
+            :};
 
-Author ::= SYMBOL;
+Author ::= SYMBOL
+            {: 
+                // Acción semántica para validar el formato del autor si es necesario
+                String author = ((Symbol) $1).value.toString();
+                if (author.length() == 0) {
+                    report_error("Author cannot be empty!", $1);
+                }
+            :};
 
-Date ::= "(" YEAR ")";
+Date ::= "(" YEAR ")"
+            {: 
+                // Acción semántica para validar el formato del año si es necesario
+                int year = (Integer) $2.value;
+                if (year <= 0) {
+                    report_error("Invalid year format!", $2);
+                }
+            :};
 
-BookTitle ::= TITLE;
+BookTitle ::= TITLE
+            {: 
+                // Acción semántica para validar el formato del título si es necesario
+                String title = ((Symbol) $1).value.toString();
+                if (title.length() == 0) {
+                    report_error("Title cannot be empty!", $1);
+                }
+            :};
 
-Editorial ::= SYMBOL;
+Editorial ::= SYMBOL
+            {: 
+                // Acción semántica para validar el formato de la editorial si es necesario
+                String publisher = ((Symbol) $1).value.toString();
+                if (publisher.length() == 0) {
+                    report_error("Publisher cannot be empty!", $1);
+                }
+            :};
 
 /* Reglas de precedencia (si es necesario) */
 
 precedence left TOK_AND, TOK_OR, TOK_NOT;
-   

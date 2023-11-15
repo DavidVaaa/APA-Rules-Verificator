@@ -45,7 +45,7 @@ DOT = \.
                          return symbol(sym.TOKEN2, Integer.valueOf(yytext())); }
 "token3"                { System.out.print(yytext()); return symbol(sym.TOKEN3); }
 "token4"                { System.out.print(yytext()); return symbol(sym.TOKEN4); }
-
+}
 /*
     // Expresión regular para el nombre del autor
     [A-Za-z'\n,.]+
